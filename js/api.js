@@ -93,28 +93,6 @@ export const api = {
 			const baseUrl = lpm.link.endsWith("/") ? lpm.link.slice(0, -1) : lpm.link;
 			const afterDate = utils.getLastMonthDate();
 
-			// Method 1: Try direct JSON first (some Blogspot blogs allow this)
-			try {
-				const jsonUrl = `${baseUrl}/feeds/posts/default?alt=json&max-results=100&published-min=${afterDate}`;
-				const response = await fetch(jsonUrl);
-
-				if (response.ok) {
-					const data = await response.json();
-					const posts = api.parseBlogspotPosts(data, lpm);
-
-					state.lpmStats.set(lpm.lpmName, {
-						lpm: lpm,
-						count: posts.length,
-						status: "success",
-					});
-
-					return posts;
-				}
-			} catch (e) {
-				console.log(`JSON method failed for ${lpm.lpmName}, trying JSONP...`);
-			}
-
-			// Method 2: Use JSONP with dynamic script injection
 			const posts = await new Promise((resolve, reject) => {
 				const callbackName = `blogspotCallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 				const jsonpUrl = `${baseUrl}/feeds/posts/default?alt=json-in-script&callback=${callbackName}&max-results=100&published-min=${afterDate}`;
@@ -189,19 +167,14 @@ export const api = {
 				image = utils.extractImage(post.content.$t);
 			}
 
-			// Try summary
-			if (!image && post.summary?.$t) {
-				image = utils.extractImage(post.summary.$t);
-			}
-
 			return {
 				title: post.title.$t,
 				link: post.link.find((l) => l.rel === "alternate")?.href || "",
 				date: new Date(post.published.$t),
 				image: image,
-				excerpt: utils.stripHtml(post.summary?.$t).substring(0, 150),
+				excerpt: utils.extractBlogspotExcerpt(post),
 				lpmName: lpm.lpmName,
-				location: `${lpm.city}, ${lpm.provinsi}`,
+				universitas: lpm.univ,
 				provinsi: lpm.provinsi,
 				city: lpm.city,
 			};
@@ -244,7 +217,7 @@ export const api = {
 					.replace(/&#8230;|&hellip;/g, " [&#8230]") // remove encoded ellipsis
 					.substring(0, 150),
 				lpmName: lpm.lpmName,
-				location: `${lpm.city}, ${lpm.provinsi}`,
+				universitas: lpm.univ,
 				provinsi: lpm.provinsi,
 				city: lpm.city,
 			};

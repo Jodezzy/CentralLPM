@@ -62,12 +62,6 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label for="filter-lpm">Filter LPM:</label>
-                    <select id="filter-lpm" class="filter-select">
-                        <option value="">Semua LPM</option>
-                    </select>
-                </div>
-                <div class="filter-group">
                     <label for="filter-provinsi">Provinsi:</label>
                     <select id="filter-provinsi" class="filter-select">
                         <option value="">Semua Provinsi</option>
@@ -79,10 +73,25 @@
                         <option value="">Semua Kota</option>
                     </select>
                 </div>
+                <div class="filter-group">
+                    <label for="filter-Universitas">Uniiversitas:</label>
+                    <select id="filter-Universitas" class="filter-select">
+                        <option value="">Semua Universitas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-lpm">Filter LPM:</label>
+                    <select id="filter-lpm" class="filter-select">
+                        <option value="">Semua LPM</option>
+                    </select>
+                </div>
                 <button id="reset-filters" class="reset-btn">Reset Filter</button>
             </div>
 
             <div class="posts-grid" id="posts-grid"></div>
+            <button id="load-more-btn" class="load-more-btn" style="display: none;">
+                Muat Lebih Banyak
+            </button>
             <div class="loading" id="loading">Memuat artikel...</div>
         </section>
     </div>

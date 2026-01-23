@@ -27,7 +27,7 @@ export const render = {
                         <span>${main.lpmName}</span>
                     </div>
                     <h2 class="hero-title">${main.title}</h2>
-                    <div class="hero-meta">${utils.formatDate(main.date)} • ${main.location}</div>
+                    <div class="hero-meta">${utils.formatDate(main.date)} • ${main.universitas}, ${main.city}, ${main.provinsi}</div>
                 </div>
             </div>
             <div class="hero-secondary">
@@ -110,11 +110,13 @@ stats() {
 		const filterLpm = document.getElementById("filter-lpm");
 		const filterProvinsi = document.getElementById("filter-provinsi");
 		const filterCity = document.getElementById("filter-city");
+		const filterUniversitas = document.getElementById("filter-Universitas");
 
 		// Get unique values
 		const lpms = [...new Set(state.allPosts.map((p) => p.lpmName))].sort();
 		const provinsis = [...new Set(state.allPosts.map((p) => p.provinsi))].sort();
 		const cities = [...new Set(state.allPosts.map((p) => p.city))].sort();
+		const universitas = [...new Set(state.allPosts.map((p) => p.universitas))].sort();
 
 		// Populate LPM filter
 		filterLpm.innerHTML = '<option value="">Semua LPM</option>' + lpms.map((lpm) => `<option value="${lpm}">${lpm}</option>`).join("");
@@ -124,13 +126,16 @@ stats() {
 
 		// Populate City filter
 		filterCity.innerHTML = '<option value="">Semua Kota</option>' + cities.map((city) => `<option value="${city}">${city}</option>`).join("");
+
+		// Populate Universitas filter
+		filterUniversitas.innerHTML = '<option value="">Semua Universitas</option>' + universitas.map((univ) => `<option value="${univ}">${univ}</option>`).join("");
 	},
 
 	posts() {
 		const postsGrid = document.getElementById("posts-grid");
 		const loading = document.getElementById("loading");
 
-		const postsToDisplay = state.filters.lpm || state.filters.provinsi || state.filters.city ? state.filteredPosts : state.allPosts;
+		const postsToDisplay =  state.filters.city || state.filters.provinsi || state.filters.lpm || state.filters.universitas ? state.filteredPosts : state.allPosts;
 
 		const sortedPosts = postsToDisplay.sort((a, b) => b.date - a.date);
 		const placeholder = utils.getPlaceholderImage();
@@ -154,7 +159,7 @@ stats() {
                 </div>
                 <div class="post-content">
                     <div class="post-meta">
-                        <span>${post.location}</span>
+                        <span>${post.universitas}, ${post.city}, ${post.provinsi}</span>
                         <span>${utils.formatDate(post.date)}</span>
                     </div>
                     <h3 class="post-title">${post.title}</h3>

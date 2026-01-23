@@ -25,13 +25,6 @@ document.getElementById("show-more-btn").addEventListener("click", () => {
 	render.stats();
 });
 
-// Filter for da LPM
-document.getElementById("filter-lpm").addEventListener("change", (e) => {
-	state.filters.lpm = e.target.value;
-	updateFilteredPosts();
-	render.posts();
-});
-
 // Filter for provinsi
 document.getElementById("filter-provinsi").addEventListener("change", (e) => {
 	state.filters.provinsi = e.target.value;
@@ -46,12 +39,29 @@ document.getElementById("filter-city").addEventListener("change", (e) => {
 	render.posts();
 });
 
+
+// Filter for da LPM
+document.getElementById("filter-lpm").addEventListener("change", (e) => {
+	state.filters.lpm = e.target.value;
+	updateFilteredPosts();
+	render.posts();
+});
+
+
+// Filter for da Universitas
+document.getElementById("filter-Universitas").addEventListener("change", (e) => {
+	state.filters.universitas = e.target.value;
+	updateFilteredPosts();
+	render.posts();
+});
+
 // Reset filters
 document.getElementById("reset-filters").addEventListener("click", () => {
-	state.filters = { lpm: "", provinsi: "", city: "" };
-	document.getElementById("filter-lpm").value = "";
+	state.filters = { provinsi: "", city: "", univ: "", lpm: "" };
 	document.getElementById("filter-provinsi").value = "";
 	document.getElementById("filter-city").value = "";
+	document.getElementById("filter-Universitas").value = "";
+	document.getElementById("filter-lpm").value = "";
 	updateFilteredPosts();
 	render.posts();
 });
@@ -70,23 +80,8 @@ async function init() {
 
 		console.log(`Loaded ${state.lpms.length} LPMs from CSV`);
 
-		// Fetch posts from all LPMs
-		// const promises = state.lpms.map(lpm =>
-		//     api.fetchPosts(lpm).then(posts => {
-		//         state.allPosts.push(...posts);
-		//         state.filteredPosts = [...state.allPosts];
-
-		//         // Update UI progressively
-		//         render.hero();
-		//         render.stats();
-		//         render.scrollingNews();
-		//         render.filters();
-		//         render.posts();
-		//     })
-		// );
-
 		const promises = state.lpms
-			// .filter((lpm) => lpm.note === "Blogspot") // skip Blogspot entries
+			// .filter((lpm) => lpm.note === "Blogspot") 
 			.map((lpm) =>
 				api.fetchPosts(lpm).then((posts) => {
 					state.allPosts.push(...posts);
