@@ -1,0 +1,41 @@
+LPM Tinta Mas (https://www.tintamasnews.com/) - Error: HTTPSConnectionPool(host='www.tintamasnews.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019950A57E00>: Failed to resolve 'www.tintamasnews.com' ([Errno 11001] getaddrinfo failed)"))
+
+LPM Nuansa (https://lppmnuansa.umy.ac.id/) - No logo found
+
+LPM Metamorfosa (https://lpmmetamorfosa.com/) - Error: HTTPSConnectionPool(host='lpmmetamorfosa.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000199508F5810>: Failed to resolve 'lpmmetamorfosa.com' ([Errno 11001] getaddrinfo failed)"))
+
+LPM Presisi (http://lpmpressisi.com/) - No logo found
+
+LPM Campus (https://lpmcampus.com/) - Error: No connection adapters were found for 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MiIgaGVpZ2h0PSIxMTgiIHZpZXdCb3g9IjAgMCA5MiAxMTgiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHN0eWxlPSJmaWxsOiNjZmQ0ZGI7ZmlsbC1vcGFjaXR5OiAwLjE7Ii8+PC9zdmc+'
+
+LPM DISPLAY (https://display.ub.ac.id/) - No logo found
+
+LPM Diagnostika (https://lpm.fk.ub.ac.id/) - No logo found
+
+LPM Indikator (https://lpmindikator.com/) - Error: HTTPSConnectionPool(host='lpmindikator.com', port=443): Read timed out. (read timeout=10)
+
+LPM Siar (https://siarpersma.id/) - No logo found
+
+LPM BUMANTARA (https://bumantaralpmis.business.blog/) - Error: HTTPSConnectionPool(host='bumantaralpmis.business.blog', port=443): Read timed out. (read timeout=10)
+
+LPM DIDAKTIK (https://didaktikonline.com/) - Error: HTTPSConnectionPool(host='didaktikonline.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000199513A5A90>: Failed to resolve 'didaktikonline.com' ([Errno 11001] getaddrinfo failed)"))
+
+LPM Azas (https://lpmazas.umm.ac.id/) - Error: HTTPSConnectionPool(host='lpmazas.umm.ac.id', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000199513A4410>: Failed to resolve 'lpmazas.umm.ac.id' ([Errno 11001] getaddrinfo failed)"))
+
+LPM Nadifia (https://lpmnadifia.blogspot.com/) - Error: HTTPSConnectionPool(host='lpmnadifia.blogspot.com', port=443): Read timed out.
+
+LPM Fenomena (https://lpmfenomena.com/) - Error: HTTPSConnectionPool(host='lpmfenomena.com', port=443): Read timed out. (read timeout=10)
+
+LPM IPMA (https://ipmanews.blogspot.com/) - No logo found
+
+LPM Qimah (https://www.lpmqimah.com/) - Error: HTTPSConnectionPool(host='blogger.googleusercontent.com', port=443): Read timed out. (read timeout=10)
+
+LPM Alam Tara (https://www.alamtarapersma.com) - Error: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+LPM Arrisalah (https://www.arrisalahpers.com/) - Error: No connection adapters were found for 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAD6AAAA+gBtXtSawAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAYSURBVCiRY0xISOBgoAAwUaJ51IBhYwAAuQABOsYCprwAAAAASUVORK5CYII='
+
+LPM WASKITA (https://lpmwaskita.com/) - No logo found
+
+LPM INTR-O (https://introrealita.com/) - Error: HTTPSConnectionPool(host='introrealita.com', port=443): Read timed out.
+
+LPM Neraca (https://lpmneraca.com/) - No logo found

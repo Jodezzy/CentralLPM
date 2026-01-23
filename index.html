@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central LPM - Agregator Berita Pers Mahasiswa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Serif:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+</head>
+
+<body>
+    <div class="header-section">
+        <header>
+            <div class="container header-content">
+                <div class="header-text">
+                    <div class="subtitle">Agregator Berita Pers Mahasiswa</div>
+                </div>
+
+                <div class="logo-container">
+                    <img src="./assets/Logo_Central_LPM.png" alt="Central LPM">
+                </div>
+
+                <div class="header-time">
+                    <div id="current-date"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="scrolling-news">
+            <div class="scrolling-content" id="scrolling-news">
+                <span class="news-item">Memuat berita terkini...</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container">
+        <div class="hero-section" id="hero-section">
+            <div class="loading">Memuat berita unggulan...</div>
+        </div>
+
+        <section class="stats-section">
+            <div class="stats-header">
+                <h2 class="stats-title">Stats 1 Bulan Terakhir</h2>
+                <div class="stats-period" id="stats-period"></div>
+            </div>
+            <div class="stats-grid" id="stats-grid"></div>
+            <button class="show-more-btn" id="show-more-btn" style="display: none;">
+                Tampilkan Semua LPM
+            </button>
+        </section>
+
+        <section class="posts-section">
+            <h2 class="section-title">Indeks Artikel</h2>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-lpm">Filter LPM:</label>
+                    <select id="filter-lpm" class="filter-select">
+                        <option value="">Semua LPM</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-provinsi">Provinsi:</label>
+                    <select id="filter-provinsi" class="filter-select">
+                        <option value="">Semua Provinsi</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-city">Kota:</label>
+                    <select id="filter-city" class="filter-select">
+                        <option value="">Semua Kota</option>
+                    </select>
+                </div>
+                <button id="reset-filters" class="reset-btn">Reset Filter</button>
+            </div>
+
+            <div class="posts-grid" id="posts-grid"></div>
+            <div class="loading" id="loading">Memuat artikel...</div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
