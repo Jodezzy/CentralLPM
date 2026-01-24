@@ -23,10 +23,8 @@ export const state = {
 export function updateFilteredPosts() {
 	console.log("Updating filtered posts with filters:", state.filters);
 	if (!state.filters.provinsi && !state.filters.city && !state.filters.universitas && !state.filters.lpm) {
-		// No filters applied, use all posts
 		state.filteredPosts = [...state.allPosts];
 	} else {
-		// Apply filters
 		state.filteredPosts = state.allPosts.filter((post) => {
 			if (state.filters.provinsi && post.provinsi !== state.filters.provinsi) return false;
 			if (state.filters.city && post.city !== state.filters.city) return false;

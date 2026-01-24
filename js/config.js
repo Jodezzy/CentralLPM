@@ -1,5 +1,5 @@
 export const CONFIG = {
-    HIGHLIGHT_LPMS: ['LPM Kavling', 'LPM Mercusuar'],
+    HIGHLIGHT_LPMS: ['LPM Kavling', 'LPM Mercusuar', 'LPM Himmah'],
     STATS_INITIAL_SHOW: 6,
     SCROLLING_NEWS_COUNT: 10,
     CORS_PROXY: 'https://api.allorigins.win/raw?url=',
@@ -8,7 +8,7 @@ export const CONFIG = {
     
     // Lazy loading settings
     POSTS_PER_PAGE: 45,
-    CACHE_DURATION: 1 * 60 * 1000, // 30 minutes
+    CACHE_DURATION: 30 * 60 * 1000, // 30 minutes
     LOADING_THRESHOLD: 0.8, // Show content when 80% loaded
     
     // Image assets

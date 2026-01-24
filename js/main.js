@@ -70,6 +70,40 @@ if (loadMoreBtn) {
 	});
 }
 
+const refreshBtn = document.getElementById("refresh-btn");
+if (refreshBtn) {
+	refreshBtn.addEventListener("click", async () => {
+		console.log("=== MANUAL REFRESH TRIGGERED ===");
+
+		// Clear cache
+		cache.clear();
+
+		// Show loading state
+		state.isLoading = true;
+		refreshBtn.disabled = true;
+		refreshBtn.textContent = "⟳ Refreshing...";
+
+		render.posts();
+
+		// Clear current data
+		state.allPosts = [];
+		state.lpmStats.clear();
+		state.currentPage = 1;
+
+		// Reload fresh data
+		await loadFreshData();
+
+		// Reset button
+		state.isLoading = false;
+		refreshBtn.disabled = false;
+		refreshBtn.textContent = "↻ Refresh";
+
+		render.posts();
+
+		console.log("=== MANUAL REFRESH COMPLETE ===");
+	});
+}
+
 async function init() {
 	try {
 		console.log("=== INIT START ===");
@@ -80,13 +114,11 @@ async function init() {
 		const cachedData = cache.load();
 		if (cachedData && cachedData.posts.length > 0) {
 			console.log("✓ Using cached data");
-			console.log("Cached posts:", cachedData.posts.length);
 
 			state.allPosts = cachedData.posts;
 			state.lpmStats = cachedData.stats;
 			state.cacheTimestamp = Date.now();
 
-			// Log cached highlight posts
 			console.log("Cached highlight posts:");
 			CONFIG.HIGHLIGHT_LPMS.forEach((lpmName) => {
 				const posts = state.allPosts.filter((p) => p.lpmName === lpmName);
@@ -100,12 +132,8 @@ async function init() {
 			render.filters();
 			render.posts();
 
-			state.isLoading = false;
-
-			// FIXED: Disable background refresh to prevent posts from disappearing
-			// Only refresh if user explicitly requests it or on next page load
-			console.log("✓ Cache loaded successfully, skipping background refresh");
 			console.log("=== INIT END (from cache) ===");
+			state.isLoading = false;
 			return;
 		}
 
@@ -151,15 +179,6 @@ async function loadFreshData() {
 	const promises = state.lpms.map(async (lpm) => {
 		const posts = await api.fetchPosts(lpm);
 
-		// Log highlight LPM posts
-		if (CONFIG.HIGHLIGHT_LPMS.includes(lpm.lpmName)) {
-			console.log(`🌟 Loaded ${posts.length} posts from ${lpm.lpmName}`);
-			posts.forEach((post) => {
-				console.log(`   - "${post.title}"`);
-			});
-			highlightLpmsLoaded.add(lpm.lpmName);
-		}
-
 		state.allPosts.push(...posts);
 		state.loadedLpmCount++;
 
@@ -195,13 +214,6 @@ async function loadFreshData() {
 	await Promise.all(promises);
 
 	console.log("=== ALL LPMS LOADED ===");
-	console.log(`Final post count: ${state.allPosts.length}`);
-	console.log("Highlight posts in final state:");
-	CONFIG.HIGHLIGHT_LPMS.forEach((lpmName) => {
-		const posts = state.allPosts.filter((p) => p.lpmName === lpmName);
-		console.log(`  ${lpmName}: ${posts.length} posts`);
-		posts.forEach((p) => console.log(`    - "${p.title}"`));
-	});
 
 	// Final render - IMPORTANT: Don't clear state.allPosts here
 	state.isLoading = false;

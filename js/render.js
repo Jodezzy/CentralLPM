@@ -1,55 +1,46 @@
 import { CONFIG } from "./config.js";
 import { utils } from "./utils.js";
-import { state, loadMorePosts } from "./state.js";
+import { state } from "./state.js";
 
 export const render = {
 	hero() {
-        console.log('=== HERO RENDER START ===');
-        console.log('Total posts in state.allPosts:', state.allPosts.length);
-        console.log('Highlight LPMs:', CONFIG.HIGHLIGHT_LPMS);
-        
-        const heroSection = document.getElementById('hero-section');
-        
-        // Check how many posts from each highlight LPM
-        CONFIG.HIGHLIGHT_LPMS.forEach(lpmName => {
-            const count = state.allPosts.filter(p => p.lpmName === lpmName).length;
-            console.log(`  - ${lpmName}: ${count} posts`);
-        });
-        
-        const highlightPosts = state.allPosts
-            .filter(post => {
-                const isHighlight = CONFIG.HIGHLIGHT_LPMS.includes(post.lpmName);
-                if (isHighlight) {
-                    console.log(`  ✓ Including post: "${post.title}" from ${post.lpmName}`);
-                }
-                return isHighlight;
-            })
-            .sort((a, b) => b.date - a.date)
-            .slice(0, 4);
+		console.log("=== HERO RENDER START ===");
+		console.log("Total posts in state.allPosts:", state.allPosts.length);
+		console.log("Highlight LPMs:", CONFIG.HIGHLIGHT_LPMS);
 
-        console.log('Filtered highlight posts:', highlightPosts.length);
-        
-        if (highlightPosts.length === 0) {
-            console.log('⚠ No highlight posts found, showing loading message');
-            heroSection.innerHTML = '<div class="loading">Memuat berita unggulan...</div>';
-            console.log('=== HERO RENDER END (empty) ===');
-            return;
-        }
-        
-        // Need at least 4 posts for full hero, but show with 1+ posts
-        if (highlightPosts.length < 4) {
-            console.log(`⚠ Only ${highlightPosts.length} highlight posts (need 4 for full display)`);
-        }
-        
-        console.log('Hero posts selected:');
-        highlightPosts.forEach((post, idx) => {
-            console.log(`  ${idx + 1}. ${post.lpmName}: "${post.title}" (${post.date})`);
-        });
+		const heroSection = document.getElementById("hero-section");
 
-        const [main, ...secondary] = highlightPosts;
-        console.log('=== HERO RENDER END ===');
+		const highlightPosts = state.allPosts
+			.filter((post) => {
+				const isHighlight = CONFIG.HIGHLIGHT_LPMS.includes(post.lpmName);
+				return isHighlight;
+			})
+			.sort((a, b) => b.date - a.date)
+			.slice(0, 4);
 
-        heroSection.innerHTML = `
+		console.log("Filtered highlight posts:", highlightPosts.length);
+
+		if (highlightPosts.length === 0) {
+			console.log("⚠ No highlight posts found, showing loading message");
+			heroSection.innerHTML = '<div class="loading">Memuat berita unggulan...</div>';
+			console.log("=== HERO RENDER END (empty) ===");
+			return;
+		}
+
+		// Need at least 4 posts for full hero, but show with 1+ posts
+		if (highlightPosts.length < 4) {
+			console.log(`⚠ Only ${highlightPosts.length} highlight posts (need 4 for full display)`);
+		}
+
+		console.log("Hero posts selected:");
+		highlightPosts.forEach((post, idx) => {
+			console.log(`  ${idx + 1}. ${post.lpmName}: "${post.title}" (${post.date})`);
+		});
+
+		const [main, ...secondary] = highlightPosts;
+		console.log("=== HERO RENDER END ===");
+
+		heroSection.innerHTML = `
             <div class="hero-main" onclick="window.open('${main.link}', '_blank')">
                 <img src="${main.image || CONFIG.MISSING_IMAGE}" alt="${main.title}" onerror="this.src='${CONFIG.MISSING_IMAGE}'">
                 <div class="hero-overlay">
@@ -58,22 +49,25 @@ export const render = {
                         <span>${main.lpmName}</span>
                     </div>
                     <h2 class="hero-title">${main.title}</h2>
-                    <div class="hero-meta">${utils.formatDate(main.date)} • ${main.location}</div>
+                    <div class="hero-meta">${utils.formatDate(main.date)} • ${main.universitas}, ${main.city}, ${main.provinsi}</div>
                 </div>
             </div>
             <div class="hero-secondary">
-                ${secondary.map(post => `
+                ${secondary
+					.map(
+						(post) => `
                     <div class="hero-card" onclick="window.open('${post.link}', '_blank')">
                         <img src="${post.image || CONFIG.MISSING_IMAGE}" alt="${post.title}" onerror="this.src='${CONFIG.MISSING_IMAGE}'">
                         <div class="hero-card-overlay">
                             <div class="hero-card-title">${post.title}</div>
                         </div>
                     </div>
-                `).join('')}
+                `,
+					)
+					.join("")}
             </div>
         `;
-    },
-
+	},
 
 	stats() {
 		const statsGrid = document.getElementById("stats-grid");
@@ -135,31 +129,6 @@ export const render = {
 
 		scrollingNews.innerHTML = newsItems + newsItems;
 	},
-
-	// filters() {
-	// 	const filterLpm = document.getElementById("filter-lpm");
-	// 	const filterProvinsi = document.getElementById("filter-provinsi");
-	// 	const filterCity = document.getElementById("filter-city");
-	// 	const filterUniversitas = document.getElementById("filter-Universitas");
-
-	// 	// Get unique values
-	// 	const lpms = [...new Set(state.allPosts.map((p) => p.lpmName))].sort();
-	// 	const provinsis = [...new Set(state.allPosts.map((p) => p.provinsi))].sort();
-	// 	const cities = [...new Set(state.allPosts.map((p) => p.city))].sort();
-	// 	const universitas = [...new Set(state.allPosts.map((p) => p.universitas))].sort();
-
-	// 	// Populate LPM filter
-	// 	filterLpm.innerHTML = '<option value="">Semua LPM</option>' + lpms.map((lpm) => `<option value="${lpm}">${lpm}</option>`).join("");
-
-	// 	// Populate Provinsi filter
-	// 	filterProvinsi.innerHTML = '<option value="">Semua Provinsi</option>' + provinsis.map((prov) => `<option value="${prov}">${prov}</option>`).join("");
-
-	// 	// Populate City filter
-	// 	filterCity.innerHTML = '<option value="">Semua Kota</option>' + cities.map((city) => `<option value="${city}">${city}</option>`).join("");
-
-	// 	// Populate Universitas filter
-	// 	filterUniversitas.innerHTML = '<option value="">Semua Universitas</option>' + universitas.map((univ) => `<option value="${univ}">${univ}</option>`).join("");
-	// },
 
 	filters() {
 		const filterProvinsi = document.getElementById("filter-provinsi");
@@ -224,7 +193,7 @@ export const render = {
                     <div class="post-content">
                         <div class="post-meta">
                             <span>${utils.formatDate(post.date)}</span>
-                            <span>${post.univ}, ${post.city}, ${post.provinsi}</span>
+                            <span>${post.universitas}, ${post.city}, ${post.provinsi}</span>
                         </div>
                         <h3 class="post-title">${post.title}</h3>
                         ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ""}
@@ -237,19 +206,18 @@ export const render = {
 		// Lazy load images
 		this.lazyLoadImages();
 
-		// Update loading indicator
-		if (state.isLoading) {
+		if (state.isLoading && state.totalLpms > 0) {
 			const progress = Math.round((state.loadedLpmCount / state.totalLpms) * 100);
 			loading.innerHTML = `
-                <div class="loading-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                    <div class="progress-text">
-                        Memuat ${state.loadedLpmCount}/${state.totalLpms} LPM (${progress}%)
-                    </div>
-                </div>
-            `;
+				<div class="loading-progress">
+					<div class="progress-bar">
+						<div class="progress-fill" style="width: ${progress}%"></div>
+					</div>
+					<div class="progress-text">
+						Memuat ${state.loadedLpmCount}/${state.totalLpms} LPM (${progress}%)
+					</div>
+				</div>
+			`;
 			loading.style.display = "block";
 		} else {
 			loading.style.display = "none";
