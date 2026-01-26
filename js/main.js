@@ -43,10 +43,11 @@ document.getElementById("filter-lpm").addEventListener("change", (e) => {
 });
 document.getElementById("reset-filters").addEventListener("click", () => {
 	console.log("Resetting filters");
-	state.filters = { lpm: "", provinsi: "", city: "" };
-	document.getElementById("filter-lpm").value = "";
+	state.filters = { provinsi: "", city: "", universitas: "", lpm: "" };
 	document.getElementById("filter-provinsi").value = "";
 	document.getElementById("filter-city").value = "";
+	document.getElementById("filter-Universitas").value = "";
+	document.getElementById("filter-lpm").value = "";
 	updateFilteredPosts();
 	render.posts();
 });
@@ -83,12 +84,20 @@ if (refreshBtn) {
 		refreshBtn.disabled = true;
 		refreshBtn.textContent = "⟳ Refreshing...";
 
-		render.posts();
-
-		// Clear current data
+		// Clear current data FIRST to show blank state
 		state.allPosts = [];
+		state.filteredPosts = [];
+		state.displayedPosts = [];
 		state.lpmStats.clear();
 		state.currentPage = 1;
+
+		// Clear UI to show blank state
+		document.getElementById("posts-grid").innerHTML = "";
+		document.getElementById("hero-section").innerHTML = '<div class="loading">Memuat berita unggulan...</div>';
+		document.getElementById("stats-grid").innerHTML = "";
+
+		// Show loading indicator
+		render.loadingProgress();
 
 		// Reload fresh data
 		await loadFreshData();
@@ -97,8 +106,6 @@ if (refreshBtn) {
 		state.isLoading = false;
 		refreshBtn.disabled = false;
 		refreshBtn.textContent = "↻ Refresh";
-
-		render.posts();
 
 		console.log("=== MANUAL REFRESH COMPLETE ===");
 	});
@@ -120,11 +127,6 @@ async function init() {
 			state.cacheTimestamp = Date.now();
 
 			console.log("Cached highlight posts:");
-			CONFIG.HIGHLIGHT_LPMS.forEach((lpmName) => {
-				const posts = state.allPosts.filter((p) => p.lpmName === lpmName);
-				console.log(`  ${lpmName}: ${posts.length} posts`);
-			});
-
 			updateDisplayedPosts();
 			render.hero();
 			render.stats();
@@ -179,6 +181,11 @@ async function loadFreshData() {
 	const promises = state.lpms.map(async (lpm) => {
 		const posts = await api.fetchPosts(lpm);
 
+		// Track highlight LPMs
+		if (CONFIG.HIGHLIGHT_LPMS.includes(lpm.lpmName)) {
+			highlightLpmsLoaded.add(lpm.lpmName); // THIS LINE WAS MISSING!
+		}
+
 		state.allPosts.push(...posts);
 		state.loadedLpmCount++;
 
@@ -195,6 +202,17 @@ async function loadFreshData() {
 			console.log(`Highlight LPMs loaded: ${Array.from(highlightLpmsLoaded).join(", ")}`);
 			console.log(`Posts before first render: ${state.allPosts.length}`);
 
+			updateDisplayedPosts();
+			render.hero();
+			render.stats();
+			render.scrollingNews();
+			render.filters();
+			render.posts();
+		} 
+		if (hasShownInitialContent && (state.shownLpmCount < state.loadedLpmCount)) {
+			// Show content when we've loaded more LPMs than we've shown
+			state.shownLpmCount = state.loadedLpmCount;
+			console.log(`✓ Showing content after loading ${state.loadedLpmCount} LPMs`);
 			updateDisplayedPosts();
 			render.hero();
 			render.stats();
@@ -246,7 +264,7 @@ async function refreshData() {
 	// This was causing posts to disappear
 	const oldPosts = [...state.allPosts]; // Keep a backup
 
-	state.allPosts = [];
+	render.posts(); // Show loading state
 	state.lpmStats.clear();
 	state.isLoading = true;
 

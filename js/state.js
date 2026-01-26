@@ -15,6 +15,7 @@ export const state = {
 	},
 	currentPage: 1,
 	loadedLpmCount: 0,
+	shownLpmCount: 0,
 	totalLpms: 0,
 	isLoading: false,
 	cacheTimestamp: null,

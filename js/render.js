@@ -158,6 +158,7 @@ export const render = {
 		console.log("Rendering posts:", state.displayedPosts.length);
 
 		if (state.displayedPosts.length === 0 && !state.isLoading) {
+			console.log("No posts to display, but still loading");
 			loading.textContent = "Tidak ada artikel yang sesuai filter";
 			loading.style.display = "block";
 			postsGrid.innerHTML = "";
