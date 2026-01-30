@@ -136,18 +136,98 @@ export const render = {
 		const filterUniversitas = document.getElementById("filter-Universitas");
 		const filterLpm = document.getElementById("filter-lpm");
 
-		const provinsis = [...new Set(state.allPosts.map((p) => p.provinsi))].sort();
-		const cities = [...new Set(state.allPosts.map((p) => p.city))].sort();
-		const universitas = [...new Set(state.allPosts.map((p) => p.universitas))].sort();
-		const lpms = [...new Set(state.allPosts.map((p) => p.lpmName))].sort();
+		// Get currently filtered posts based on active filters
+		let availablePosts = state.allPosts;
 
-		filterProvinsi.innerHTML = '<option value="">Semua Provinsi</option>' + provinsis.map((prov) => `<option value="${prov}">${prov}</option>`).join("");
+		// Apply provinsi filter
+		if (state.filters.provinsi) {
+			availablePosts = availablePosts.filter((p) => p.provinsi === state.filters.provinsi);
+		}
 
-		filterCity.innerHTML = '<option value="">Semua Kota</option>' + cities.map((city) => `<option value="${city}">${city}</option>`).join("");
+		// Apply city filter
+		if (state.filters.city) {
+			availablePosts = availablePosts.filter((p) => p.city === state.filters.city);
+		}
 
-		filterUniversitas.innerHTML = '<option value="">Semua Universitas</option>' + universitas.map((univ) => `<option value="${univ}">${univ}</option>`).join("");
+		// Apply universitas filter
+		if (state.filters.universitas) {
+			availablePosts = availablePosts.filter((p) => p.universitas === state.filters.universitas);
+		}
 
-		filterLpm.innerHTML = '<option value="">Semua LPM</option>' + lpms.map((lpm) => `<option value="${lpm}">${lpm}</option>`).join("");
+		// Apply lpm filter
+		if (state.filters.lpm) {
+			availablePosts = availablePosts.filter((p) => p.lpmName === state.filters.lpm);
+		}
+
+		// Extract unique values from available posts for each filter level
+		const getUniqueValues = (posts, field) => {
+			return [...new Set(posts.map((p) => p[field]).filter(Boolean))].sort();
+		};
+
+		// Provinsi - always shows all provinces
+		const allProvinsis = getUniqueValues(state.allPosts, "provinsi");
+
+		// City - filtered by provinsi if selected
+		const postsForCity = state.filters.provinsi ? state.allPosts.filter((p) => p.provinsi === state.filters.provinsi) : state.allPosts;
+		const availableCities = getUniqueValues(postsForCity, "city");
+
+		// Universitas - filtered by provinsi and city if selected
+		let postsForUniv = state.allPosts;
+		if (state.filters.provinsi) {
+			postsForUniv = postsForUniv.filter((p) => p.provinsi === state.filters.provinsi);
+		}
+		if (state.filters.city) {
+			postsForUniv = postsForUniv.filter((p) => p.city === state.filters.city);
+		}
+		const availableUniversitas = getUniqueValues(postsForUniv, "universitas");
+
+		// LPM - filtered by all previous selections
+		let postsForLpm = state.allPosts;
+		if (state.filters.provinsi) {
+			postsForLpm = postsForLpm.filter((p) => p.provinsi === state.filters.provinsi);
+		}
+		if (state.filters.city) {
+			postsForLpm = postsForLpm.filter((p) => p.city === state.filters.city);
+		}
+		if (state.filters.universitas) {
+			postsForLpm = postsForLpm.filter((p) => p.universitas === state.filters.universitas);
+		}
+		const availableLpms = getUniqueValues(postsForLpm, "lpmName");
+
+		// Update Provinsi dropdown
+		const currentProvinsi = filterProvinsi.value;
+		filterProvinsi.innerHTML = '<option value="">Semua Provinsi</option>' + allProvinsis.map((prov) => `<option value="${prov}">${prov}</option>`).join("");
+		if (currentProvinsi && allProvinsis.includes(currentProvinsi)) {
+			filterProvinsi.value = currentProvinsi;
+		}
+
+		// Update City dropdown
+		const currentCity = filterCity.value;
+		filterCity.innerHTML = '<option value="">Semua Kota</option>' + availableCities.map((city) => `<option value="${city}">${city}</option>`).join("");
+		if (currentCity && availableCities.includes(currentCity)) {
+			filterCity.value = currentCity;
+		} else if (currentCity && !availableCities.includes(currentCity)) {
+			// Clear city filter if it's no longer available
+			state.filters.city = "";
+		}
+
+		// Update Universitas dropdown
+		const currentUniv = filterUniversitas.value;
+		filterUniversitas.innerHTML = '<option value="">Semua Universitas</option>' + availableUniversitas.map((univ) => `<option value="${univ}">${univ}</option>`).join("");
+		if (currentUniv && availableUniversitas.includes(currentUniv)) {
+			filterUniversitas.value = currentUniv;
+		} else if (currentUniv && !availableUniversitas.includes(currentUniv)) {
+			state.filters.universitas = "";
+		}
+
+		// Update LPM dropdown
+		const currentLpm = filterLpm.value;
+		filterLpm.innerHTML = '<option value="">Semua LPM</option>' + availableLpms.map((lpm) => `<option value="${lpm}">${lpm}</option>`).join("");
+		if (currentLpm && availableLpms.includes(currentLpm)) {
+			filterLpm.value = currentLpm;
+		} else if (currentLpm && !availableLpms.includes(currentLpm)) {
+			state.filters.lpm = "";
+		}
 	},
 
 	posts() {

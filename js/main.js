@@ -5,10 +5,30 @@ import { api } from "./api.js";
 import { render } from "./render.js";
 import { cache } from "./cache.js";
 
-// Initialize
+function getUrlParams() {
+	const params = new URLSearchParams(window.location.search);
+	return {
+		lpm: params.get("lpm") || "",
+		provinsi: params.get("provinsi") || "",
+		city: params.get("city") || "",
+		universitas: params.get("universitas") || "",
+	};
+}
+
+function updateUrlParams(filters) {
+	const params = new URLSearchParams();
+
+	if (filters.lpm) params.set("lpm", filters.lpm);
+	if (filters.provinsi) params.set("provinsi", filters.provinsi);
+	if (filters.city) params.set("city", filters.city);
+	if (filters.universitas) params.set("universitas", filters.universitas);
+
+	const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+	window.history.pushState({}, "", newUrl);
+}
+
 document.getElementById("current-date").textContent = utils.formatDateFull(new Date());
 
-// Event Handlers
 document.getElementById("show-more-btn").addEventListener("click", () => {
 	state.showAllStats = !state.showAllStats;
 	render.stats();
@@ -17,6 +37,16 @@ document.getElementById("show-more-btn").addEventListener("click", () => {
 document.getElementById("filter-provinsi").addEventListener("change", (e) => {
 	console.log("Provinsi filter changed:", e.target.value);
 	state.filters.provinsi = e.target.value;
+
+	// Clear dependent filters if provinsi is cleared
+	if (!e.target.value) {
+		state.filters.city = "";
+		state.filters.universitas = "";
+		state.filters.lpm = "";
+	}
+
+	updateUrlParams(state.filters);
+	render.filters(); // Re-render to update dependent dropdowns
 	updateFilteredPosts();
 	render.posts();
 });
@@ -24,6 +54,15 @@ document.getElementById("filter-provinsi").addEventListener("change", (e) => {
 document.getElementById("filter-city").addEventListener("change", (e) => {
 	console.log("City filter changed:", e.target.value);
 	state.filters.city = e.target.value;
+
+	// Clear dependent filters if city is cleared
+	if (!e.target.value) {
+		state.filters.universitas = "";
+		state.filters.lpm = "";
+	}
+
+	updateUrlParams(state.filters);
+	render.filters(); // Re-render to update dependent dropdowns
 	updateFilteredPosts();
 	render.posts();
 });
@@ -31,6 +70,14 @@ document.getElementById("filter-city").addEventListener("change", (e) => {
 document.getElementById("filter-Universitas").addEventListener("change", (e) => {
 	console.log("Universitas filter changed:", e.target.value);
 	state.filters.universitas = e.target.value;
+
+	// Clear LPM filter if universitas is cleared
+	if (!e.target.value) {
+		state.filters.lpm = "";
+	}
+
+	updateUrlParams(state.filters);
+	render.filters(); // Re-render to update dependent dropdowns
 	updateFilteredPosts();
 	render.posts();
 });
@@ -38,16 +85,21 @@ document.getElementById("filter-Universitas").addEventListener("change", (e) => 
 document.getElementById("filter-lpm").addEventListener("change", (e) => {
 	console.log("LPM filter changed:", e.target.value);
 	state.filters.lpm = e.target.value;
+	updateUrlParams(state.filters);
 	updateFilteredPosts();
 	render.posts();
 });
 document.getElementById("reset-filters").addEventListener("click", () => {
 	console.log("Resetting filters");
-	state.filters = { provinsi: "", city: "", universitas: "", lpm: "" };
+	state.filters = { lpm: "", provinsi: "", city: "", universitas: "" };
+	document.getElementById("filter-lpm").value = "";
 	document.getElementById("filter-provinsi").value = "";
 	document.getElementById("filter-city").value = "";
 	document.getElementById("filter-Universitas").value = "";
-	document.getElementById("filter-lpm").value = "";
+
+	// Clear URL params
+	window.history.pushState({}, "", window.location.pathname);
+
 	updateFilteredPosts();
 	render.posts();
 });
@@ -117,6 +169,11 @@ async function init() {
 		state.isLoading = true;
 		render.loadingProgress();
 
+		// Load filters from URL
+		const urlFilters = getUrlParams();
+		state.filters = urlFilters;
+		console.log("Loaded filters from URL:", urlFilters);
+
 		// Try cache first
 		const cachedData = cache.load();
 		if (cachedData && cachedData.posts.length > 0) {
@@ -132,6 +189,10 @@ async function init() {
 			render.stats();
 			render.scrollingNews();
 			render.filters();
+
+			// Apply URL filters to UI
+			applyFiltersToUI();
+
 			render.posts();
 
 			console.log("=== INIT END (from cache) ===");
@@ -140,13 +201,36 @@ async function init() {
 		}
 
 		console.log("No valid cache, loading fresh data");
-		// Load fresh data
 		await loadFreshData();
+
+		// Apply URL filters after loading fresh data
+		applyFiltersToUI();
+
 		console.log("=== INIT END (fresh data) ===");
 	} catch (error) {
 		console.error("Initialization error:", error);
 		state.isLoading = false;
 		document.getElementById("loading").textContent = "Terjadi kesalahan saat memuat data";
+	}
+}
+
+function applyFiltersToUI() {
+	if (state.filters.lpm) {
+		document.getElementById("filter-lpm").value = state.filters.lpm;
+	}
+	if (state.filters.provinsi) {
+		document.getElementById("filter-provinsi").value = state.filters.provinsi;
+	}
+	if (state.filters.city) {
+		document.getElementById("filter-city").value = state.filters.city;
+	}
+	if (state.filters.universitas) {
+		document.getElementById("filter-Universitas").value = state.filters.universitas;
+	}
+
+	// Apply the filters
+	if (state.filters.lpm || state.filters.provinsi || state.filters.city || state.filters.universitas) {
+		updateFilteredPosts();
 	}
 }
 
@@ -208,8 +292,8 @@ async function loadFreshData() {
 			render.scrollingNews();
 			render.filters();
 			render.posts();
-		} 
-		if (hasShownInitialContent && (state.shownLpmCount < state.loadedLpmCount)) {
+		}
+		if (hasShownInitialContent && state.shownLpmCount < state.loadedLpmCount) {
 			// Show content when we've loaded more LPMs than we've shown
 			state.shownLpmCount = state.loadedLpmCount;
 			console.log(`✓ Showing content after loading ${state.loadedLpmCount} LPMs`);
@@ -255,34 +339,13 @@ async function loadFreshData() {
 	console.log("=== LOAD FRESH DATA END ===");
 }
 
-async function refreshData() {
-	console.log("=== BACKGROUND REFRESH START ===");
-	console.log("Old post count:", state.allPosts.length);
-	const oldCount = state.allPosts.length;
-
-	// IMPORTANT: Don't clear allPosts if we're doing background refresh
-	// This was causing posts to disappear
-	const oldPosts = [...state.allPosts]; // Keep a backup
-
-	render.posts(); // Show loading state
-	state.lpmStats.clear();
-	state.isLoading = true;
-
-	await loadFreshData();
-
-	console.log("New post count:", state.allPosts.length);
-	console.log("=== BACKGROUND REFRESH END ===");
-
-	if (state.allPosts.length !== oldCount) {
-		console.log(`✓ Refreshed: ${oldCount} → ${state.allPosts.length} posts`);
-		updateDisplayedPosts();
-		render.hero(); // Re-render hero with fresh data
-		render.posts();
-	} else if (state.allPosts.length === 0) {
-		console.error("⚠ Refresh resulted in 0 posts, restoring old posts");
-		state.allPosts = oldPosts;
-		updateDisplayedPosts();
-	}
-}
+// Handle browser back/forward
+window.addEventListener("popstate", () => {
+	console.log("Browser navigation detected");
+	const urlFilters = getUrlParams();
+	state.filters = urlFilters;
+	applyFiltersToUI();
+	render.posts();
+});
 
 init();
